@@ -5,8 +5,8 @@ This Header Only Library is a collection of libraries I find myself using often.
  */
 
 
-#ifndef BASIC_H_
-#define BASIC_H_
+#ifndef FASIC_H_
+#define FASIC_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,51 +38,51 @@ void Logging(FILE *stream, Log_Levels level, const char *fmt, ...);
 #define Log_File(stream, level, fmt, ...) Logging(stream, level, fmt, ##__VA_ARGS__)
 
 // Matrix Structure and Information
-typedef struct _basic_matrix {
+typedef struct _fasic_matrix {
     float *A;     // Pointer to the array of matrix elements
     size_t nrows; // Number of rows in the matrix
     size_t ncols; // Number of columns in the matrix
-} Basic_Matrix;
+} Fasic_Matrix;
 
-typedef struct _basic_shape {
+typedef struct _fasic_shape {
     size_t rows;
     size_t cols;
-} Basic_Shape;
+} Fasic_Shape;
 
 /*
 ************** MATRIX OPERATIONS FUNCTIONS DECLARATIONS *******************
 */
 
 // Core Functions
-float get_element(Basic_Matrix C, size_t row, size_t col);                      // get specific element from the Basic_Matrix
-void set_element(Basic_Matrix C, size_t row, size_t col, float new_value);      // set a specific element from the Basic_Matrix to a new value
-Basic_Matrix create_matrix(size_t rows, size_t cols);                           // creates an empty Basic_Matrix with specified parameters
-void unload(Basic_Matrix *b);                                                   // Function to free Allocated Memory
+float get_element(Fasic_Matrix C, size_t row, size_t col);                      // get specific element from the Fasic_Matrix
+void set_element(Fasic_Matrix C, size_t row, size_t col, float new_value);      // set a specific element from the Fasic_Matrix to a new value
+Fasic_Matrix create_matrix(size_t rows, size_t cols);                           // creates an empty Fasic_Matrix with specified parameters
+void unload(Fasic_Matrix *b);                                                   // Function to free Allocated Memory
 
 // Utility Functions
-Basic_Matrix random_matrix(size_t nrows, size_t ncols);                         // generates random Basic_Matrix(nrows x ncols)
-void print_matrix(const Basic_Matrix b, const char *name);                      // prints a Basic_Matrix
-Basic_Shape matrix_shape(Basic_Matrix A);                                             // returns shape of the Basic_Matrix
-Basic_Matrix fill(size_t nrows, size_t ncols, float fill_value);                // creates a Basic_Matrix filled with a specific value
+Fasic_Matrix random_matrix(size_t nrows, size_t ncols);                         // generates random Fasic_Matrix(nrows x ncols)
+void print_matrix(const Fasic_Matrix b, const char *name);                      // prints a Fasic_Matrix
+Fasic_Shape matrix_shape(Fasic_Matrix A);                                             // returns shape of the Fasic_Matrix
+Fasic_Matrix fill(size_t nrows, size_t ncols, float fill_value);                // creates a Fasic_Matrix filled with a specific value
 
 // Operation Functions
-Basic_Matrix matrix_add(Basic_Matrix *a, Basic_Matrix *b);                                  // adds two matrices
-Basic_Matrix matrix_subtract(Basic_Matrix *a, Basic_Matrix *b);                             // subtracts two matrices
-Basic_Matrix hadamard_product(Basic_Matrix *a, Basic_Matrix *b);                            // computes element-wise product of two matrices
-Basic_Matrix dot_product(Basic_Matrix *a, Basic_Matrix *b);                                 // computes the dot-product of two matrices
-Basic_Matrix transpose(Basic_Matrix *a);                                              // return transpose of Basic_Matrix a
-bool test_matrix_equal(Basic_Matrix a, Basic_Matrix b);                               // test matrices for equality
+Fasic_Matrix matrix_add(Fasic_Matrix *a, Fasic_Matrix *b);                                  // adds two matrices
+Fasic_Matrix matrix_subtract(Fasic_Matrix *a, Fasic_Matrix *b);                             // subtracts two matrices
+Fasic_Matrix hadamard_product(Fasic_Matrix *a, Fasic_Matrix *b);                            // computes element-wise product of two matrices
+Fasic_Matrix dot_product(Fasic_Matrix *a, Fasic_Matrix *b);                                 // computes the dot-product of two matrices
+Fasic_Matrix transpose(Fasic_Matrix *a);                                              // return transpose of Fasic_Matrix a
+bool test_matrix_equal(Fasic_Matrix a, Fasic_Matrix b);                               // test matrices for equality
 
 
 // Special Macro Functions
 #define PRINT(B) print_matrix(B, #B)                                /* Macro definition of a special print function */
 #define ALLOCATION_FAILED "Memory Allocation Failed.\n"             /* Return Error String */
 
-/* Macro function For Printing the shape of a Basic_Matrix */
+/* Macro function For Printing the shape of a Fasic_Matrix */
 #define PRINT_SHAPE(A)\
     do {\
-        Basic_Shape shape = matrix_shape(*A);\
-        printf("Basic_Shape: [%zu, %zu]\n", shape.rows, shape.cols);\
+        Fasic_Shape shape = matrix_shape(*A);\
+        printf("Fasic_Shape: [%zu, %zu]\n", shape.rows, shape.cols);\
     } while (0)
 
 #ifdef __cplusplus
@@ -109,7 +109,7 @@ unsigned int hashmap_lookup(HashMap *hashmap, char *key);
 void hashmap_print(HashMap *hashmap, unsigned int iteration);
 void hashmap_destroy(HashMap *hashmap);
 
-#ifdef BASIC_IMPLEMENTATION
+#ifdef FASIC_IMPLEMENTATION
 
 /* CUSTOM LOGGING FUNCTIONS IMPLEMENTATION BEGIN */
 
@@ -136,10 +136,10 @@ void Logging(FILE *stream, Log_Levels level, const char *fmt, ...)
 ************** MATRIX OPERATIONS FUNCTIONS IMPLEMENTATIONS *******************
 */
 
-float get_element(Basic_Matrix C, size_t row, size_t col) {
+float get_element(Fasic_Matrix C, size_t row, size_t col) {
     // check for valid indices
     if (row >= C.nrows || col >= C.ncols) {
-        Log_File(stderr, ERROR, "index out of bounds: [%zu, %zu] for Basic_Matrix size [%zu, %zu]\n",
+        Log_File(stderr, ERROR, "index out of bounds: [%zu, %zu] for Fasic_Matrix size [%zu, %zu]\n",
                 row, col, C.nrows, C.ncols);
         exit(EXIT_FAILURE); // handle the error, exit or return an error value
     }
@@ -147,13 +147,13 @@ float get_element(Basic_Matrix C, size_t row, size_t col) {
     return C.A[row * C.ncols + col];
 }
 
-void set_element(Basic_Matrix C, size_t row, size_t col, float new_value) {
+void set_element(Fasic_Matrix C, size_t row, size_t col, float new_value) {
     // set the element at the specified row and column to a new value
     C.A[row * C.ncols + col] = new_value;
 }
 
-Basic_Matrix create_matrix(size_t rows, size_t cols) {
-    Basic_Matrix create;
+Fasic_Matrix create_matrix(size_t rows, size_t cols) {
+    Fasic_Matrix create;
     create.nrows = rows;
     create.ncols = cols;
     create.A = calloc(sizeof(float), (rows * cols));
@@ -165,11 +165,11 @@ Basic_Matrix create_matrix(size_t rows, size_t cols) {
     return create;
 }
 
-Basic_Matrix random_matrix(size_t nrows, size_t ncols) {
-    // initialize the Basic_Matrix
-    Basic_Matrix random = create_matrix(nrows, ncols);
+Fasic_Matrix random_matrix(size_t nrows, size_t ncols) {
+    // initialize the Fasic_Matrix
+    Fasic_Matrix random = create_matrix(nrows, ncols);
 
-    // fill the Basic_Matrix with random values
+    // fill the Fasic_Matrix with random values
     for (size_t i = 0; i < random.nrows; ++i) {
         for (size_t j = 0; j < random.ncols; ++j) {
             float v = ((float)rand() / RAND_MAX) * 1000 - 500;
@@ -177,11 +177,11 @@ Basic_Matrix random_matrix(size_t nrows, size_t ncols) {
         }
     }
 
-    return random; // return the generated Basic_Matrix
+    return random; // return the generated Fasic_Matrix
 }
 
-void print_matrix(const Basic_Matrix b, const char *name) {
-    // print the Basic_Matrix with its name
+void print_matrix(const Fasic_Matrix b, const char *name) {
+    // print the Fasic_Matrix with its name
     printf("%s = [\n", name);
 
     for (size_t i = 0; i < b.nrows; ++i) {
@@ -191,22 +191,22 @@ void print_matrix(const Basic_Matrix b, const char *name) {
         }
         printf("\n");
     }
-    printf("]"); // end of Basic_Matrix
+    printf("]"); // end of Fasic_Matrix
     printf("\n\n");
 }
 
-Basic_Shape matrix_shape(Basic_Matrix A) {
-    // shape of the Basic_Matrix (rows, columns)
-    Basic_Shape shape = {.rows = A.nrows, .cols = A.ncols};
+Fasic_Shape matrix_shape(Fasic_Matrix A) {
+    // shape of the Fasic_Matrix (rows, columns)
+    Fasic_Shape shape = {.rows = A.nrows, .cols = A.ncols};
     return shape;
 }
 
-Basic_Matrix matrix_add(Basic_Matrix *A, Basic_Matrix *B) {
+Fasic_Matrix matrix_add(Fasic_Matrix *A, Fasic_Matrix *B) {
     // check if the dimensions of the matrices are the same
     assert((A->ncols == B->ncols && B->nrows == A->nrows) && "addition failed, matrices shape mismatch");
 
-    // initialize a new Basic_Matrix for the result
-    Basic_Matrix C = create_matrix(A->nrows, A->ncols);
+    // initialize a new Fasic_Matrix for the result
+    Fasic_Matrix C = create_matrix(A->nrows, A->ncols);
     
     for (size_t i = 0; i < A->nrows; ++i) {
         for (size_t j = 0; j < A->ncols; ++j) {
@@ -217,15 +217,15 @@ Basic_Matrix matrix_add(Basic_Matrix *A, Basic_Matrix *B) {
         }
     }
 
-    return C; // return the result Basic_Matrix
+    return C; // return the result Fasic_Matrix
 }
 
-Basic_Matrix matrix_subtract(Basic_Matrix *A, Basic_Matrix *B) {
+Fasic_Matrix matrix_subtract(Fasic_Matrix *A, Fasic_Matrix *B) {
     // check if the dimensions of the matrices are the same
     assert((A->ncols == B->ncols && B->nrows == A->nrows) && "subtraction failed, matrices shape mismatch");
 
-    // initialize a new Basic_Matrix for the result
-    Basic_Matrix C = create_matrix(A->nrows, A->ncols);
+    // initialize a new Fasic_Matrix for the result
+    Fasic_Matrix C = create_matrix(A->nrows, A->ncols);
 
     for (size_t i = 0; i < A->nrows; ++i) {
         for (size_t j = 0; j < A->ncols; ++j) {
@@ -239,13 +239,13 @@ Basic_Matrix matrix_subtract(Basic_Matrix *A, Basic_Matrix *B) {
     return C; // return the result
 }
 
-Basic_Matrix hadamard_product(Basic_Matrix *A, Basic_Matrix *B) {
+Fasic_Matrix hadamard_product(Fasic_Matrix *A, Fasic_Matrix *B) {
     // ensure matrices are of the same size and type
     assert(A->ncols == B->ncols && "matrices dimensions mismatch");
     assert(A->nrows == B->nrows && "matrices dimensions mismatch");
 
-    // initialize a new Basic_Matrix for the result
-    Basic_Matrix C = create_matrix(A->nrows, A->ncols);
+    // initialize a new Fasic_Matrix for the result
+    Fasic_Matrix C = create_matrix(A->nrows, A->ncols);
 
     // calculate element-wise product
     for (size_t i = 0; i < A->nrows; ++i) {
@@ -258,15 +258,15 @@ Basic_Matrix hadamard_product(Basic_Matrix *A, Basic_Matrix *B) {
         }
     }
 
-    return C; // return the result Basic_Matrix
+    return C; // return the result Fasic_Matrix
 }
 
-Basic_Matrix dot_product(Basic_Matrix *A, Basic_Matrix *B) {
+Fasic_Matrix dot_product(Fasic_Matrix *A, Fasic_Matrix *B) {
     // check if the matrices can be multiplied
     assert((A->ncols == B->nrows) && "error multiplying: dimensions mismatch");
 
-    // initialize a new Basic_Matrix for the result
-    Basic_Matrix C = create_matrix(A->nrows, B->ncols);
+    // initialize a new Fasic_Matrix for the result
+    Fasic_Matrix C = create_matrix(A->nrows, B->ncols);
 
     // calculate the dot product
     for (size_t i = 0; i < C.nrows; ++i) {
@@ -282,12 +282,12 @@ Basic_Matrix dot_product(Basic_Matrix *A, Basic_Matrix *B) {
         }
     }
 
-    return C; // return the result Basic_Matrix
+    return C; // return the result Fasic_Matrix
 }
 
-Basic_Matrix transpose(Basic_Matrix *A) {
-    // initialize a new Basic_Matrix for the result
-    Basic_Matrix C = create_matrix(A->ncols, A->nrows);
+Fasic_Matrix transpose(Fasic_Matrix *A) {
+    // initialize a new Fasic_Matrix for the result
+    Fasic_Matrix C = create_matrix(A->ncols, A->nrows);
 
     for (size_t i = 0; i < A->nrows; ++i) {
         for (size_t j = 0; j < A->ncols; ++j) {
@@ -297,10 +297,10 @@ Basic_Matrix transpose(Basic_Matrix *A) {
         }
     }
 
-    return C; // return the transposed Basic_Matrix
+    return C; // return the transposed Fasic_Matrix
 }
 
-bool test_matrix_equal(Basic_Matrix A, Basic_Matrix B) {
+bool test_matrix_equal(Fasic_Matrix A, Fasic_Matrix B) {
     // check if the dimensions match
     assert(((A.ncols == B.ncols) || (A.nrows == B.nrows))&& "not equal: different dimensions.");
 
@@ -319,22 +319,22 @@ bool test_matrix_equal(Basic_Matrix A, Basic_Matrix B) {
     return true; // equal
 }
 
-Basic_Matrix fill(size_t nrows, size_t ncols, float fill_value) {
-    // initialize Basic_Matrix
-    Basic_Matrix a = create_matrix(nrows, ncols);
+Fasic_Matrix fill(size_t nrows, size_t ncols, float fill_value) {
+    // initialize Fasic_Matrix
+    Fasic_Matrix a = create_matrix(nrows, ncols);
 
-    // fill the Basic_Matrix with the specified value
+    // fill the Fasic_Matrix with the specified value
     for (size_t i = 0; i < nrows; ++i) {
         for (size_t j = 0; j < ncols; ++j) {
             set_element(a, i , j , fill_value); // set all elements
         }
     }
 
-    return a; // return the filled Basic_Matrix
+    return a; // return the filled Fasic_Matrix
 }
 
-void unload(Basic_Matrix *B) {
-    // free allocated memory for the Basic_Matrix
+void unload(Fasic_Matrix *B) {
+    // free allocated memory for the Fasic_Matrix
     if (B->A != NULL)
     {
         free(B->A); // free the array of elements
@@ -469,6 +469,6 @@ void hashmap_destroy(HashMap *hashmap)
 
 /* HASHMAP FUNCTION IMPLEMENTATION ENDS */
 
-#endif // BASIC_IMPLEMENTATION
+#endif // FASIC_IMPLEMENTATION
 
-#endif // BASIC_H_
+#endif // FASIC_H_
