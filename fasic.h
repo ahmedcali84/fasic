@@ -23,6 +23,13 @@ extern "C" {
 #include <stddef.h>
 #include <string.h>
 #include <stdarg.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/wait.h>
+#include <dirent.h>
+#include <sys/types.h>
+#include <errno.h>
+#include <sys/stat.h>
 
 typedef enum {
     INFO,
@@ -108,6 +115,14 @@ bool hashmap_delete(HashMap *hashmap, char *key);
 unsigned int hashmap_lookup(HashMap *hashmap, char *key);
 void hashmap_print(HashMap *hashmap, unsigned int iteration);
 void hashmap_destroy(HashMap *hashmap);
+
+
+/*
+    CUSTOM 'C' BUILD SYSTEM
+ */
+void remove_directory(char *args[]);
+void make_new_directory(char *dir_name);
+void build_c_file(char *cmd_line[]);
 
 #ifdef FASIC_IMPLEMENTATION
 
@@ -468,6 +483,76 @@ void hashmap_destroy(HashMap *hashmap)
 }
 
 /* HASHMAP FUNCTION IMPLEMENTATION ENDS */
+
+void remove_directory(char *args[])
+{
+    pid_t pid = fork();
+    if (pid == -1) {
+        perror("Fork Failed");
+        exit(1);
+    }
+
+    if (pid == 0) {
+        execvp(args[0], args);
+        perror("Removing Directory Failed.");
+        exit(1);
+    } else {
+        int status;
+        waitpid(pid, &status, 0);
+        if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
+            exit(1);
+        } 
+    }    
+}
+
+void make_new_directory(char *dir_name)
+{
+    struct stat sb;
+
+    if (stat(dir_name, &sb) == 0 && S_ISDIR(sb.st_mode)) {
+        printf("Directory \'%s\' already Exists.\n", dir_name);
+        exit(0);
+    } else {
+        char *dir_args[] = {"mkdir", dir_name}; 
+        pid_t pid = fork();
+        if (pid == -1) {
+            perror("Fork Failed");
+            exit(1);
+        }
+        if (pid == 0) {
+            execvp(dir_args[0], dir_args);
+            perror("Making New Directory Failed.");
+            exit(1);
+        } else {
+            int status;
+            waitpid(pid, &status, 0);
+            if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
+                exit(1);
+            } 
+        } 
+    }
+}
+
+void build_c_file(char *cmd_line[])
+{
+    pid_t pid = fork();
+    if (pid == -1) {
+        perror("Fork Failed.");
+        exit(1);
+    }
+    
+    if (pid == 0) {
+        execvp(cmd_line[0], cmd_line);
+        perror("Build Failed.");
+        exit(1);
+    } else {
+        int status;
+        waitpid(pid, &status, 0);
+        if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
+            exit(1);
+        } 
+    }
+}
 
 #endif // FASIC_IMPLEMENTATION
 
