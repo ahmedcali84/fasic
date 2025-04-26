@@ -31,6 +31,8 @@ extern "C" {
 #include <errno.h>
 #include <sys/stat.h>
 
+#define ARRAY_LEN(array) (sizeof(array)/ sizeof(array[0]))
+
 typedef enum {
     INFO,
     ERROR,
@@ -113,16 +115,16 @@ bool hashmap_init(HashMap *hashmap);
 bool hashmap_insert(HashMap *hashmap, char *key);
 bool hashmap_delete(HashMap *hashmap, char *key);
 unsigned int hashmap_lookup(HashMap *hashmap, char *key);
-void hashmap_print(HashMap *hashmap, unsigned int iteration);
+void hashmap_print(HashMap *hashmap);
 void hashmap_destroy(HashMap *hashmap);
 
 
 /*
     CUSTOM 'C' BUILD SYSTEM
- */
+*/
 void remove_directory(char *args[]);
 void make_new_directory(char *dir_name);
-void build_c_file(char *cmd_line[]);
+bool build_c_file(char *cmd_line[]);
 
 #ifdef FASIC_IMPLEMENTATION
 
@@ -202,7 +204,7 @@ void print_matrix(const Fasic_Matrix b, const char *name) {
     for (size_t i = 0; i < b.nrows; ++i) {
         for (size_t j = 0; j < b.ncols; ++j) {
             float value = get_element(b, i , j);
-            printf(" %.2f ", value);
+            printf(" %6.2lf  ", value);
         }
         printf("\n");
     }
@@ -462,12 +464,13 @@ unsigned int hashmap_lookup(HashMap *hashmap, char *key)
     return 0;
 }
 
-void hashmap_print(HashMap *hashmap, unsigned int iteration)
+void hashmap_print(HashMap *hashmap)
 {
-    for (unsigned int i = 0; i < iteration; ++i) {
+    for (unsigned int i = 0; i < BUCKETS_SIZE; ++i) {
         Dictionary *temp = &hashmap->buckets[i];
         if (temp->key != NULL) {
-            Log_Out(INFO, "%s: %d .\n", temp->key, temp->value);
+            unsigned int hash = hash_function(temp->key);
+            Log_Out(INFO, "Index: %5d, K: %10s, V: %5d\n",hash, temp->key, temp->value);
         }
     }
 }
@@ -532,25 +535,29 @@ void make_new_directory(char *dir_name)
     }
 }
 
-void build_c_file(char *cmd_line[])
+bool build_c_file(char *cmd_line[])
 {
     pid_t pid = fork();
     if (pid == -1) {
-        perror("Fork Failed.");
-        exit(1);
+        Log_File(stderr, ERROR, "Fork Failed: %s.\n", strerror(errno));
+        return false;
     }
 
     if (pid == 0) {
-        execvp(cmd_line[0], cmd_line);
-        perror("Build Failed.");
-        exit(1);
-    } else {
-        int status;
-        waitpid(pid, &status, 0);
-        if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
-            exit(1);
+        int n = 0;
+        while(cmd_line[n] != NULL) {
+            printf("%s ", cmd_line[n]);
+            n++;
         }
+        printf("\n");
+        execvp(cmd_line[0], cmd_line);
+        Log_File(stderr, ERROR, "Build Failed: %s.\n", strerror(errno));
+        _exit(EXIT_FAILURE);
     }
+
+    int status;
+    waitpid(pid, &status, 0);
+    return WIFEXITED(status) && WEXITSTATUS(status) == 0;
 }
 
 #endif // FASIC_IMPLEMENTATION
