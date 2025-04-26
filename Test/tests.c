@@ -4,6 +4,11 @@
 #define COLS 5
 #define ROWS 5
 
+typedef struct _matrix_data {
+    Fasic_Matrix *mat;
+    const char *key;
+} Matrix_Data;
+
 int main(void)
 {
     srand(time(NULL));
@@ -11,15 +16,11 @@ int main(void)
     PRINT(random_mat);
     PRINT_SHAPE(random_mat);
 
+    Matrix_Data mat_data = {.mat = &random_mat, .key = "random_matri"};
     HashMap hashmap;
     hashmap_init(&hashmap);
 
-    hashmap_insert(&hashmap, "Ahmed");
-    hashmap_insert(&hashmap, "Ali");
-    hashmap_insert(&hashmap, "Mohammed");
-    hashmap_insert(&hashmap, "Ahmed");
-    hashmap_print(&hashmap);
-
+    hashmap_insert(&hashmap, mat_data);
     hashmap_destroy(&hashmap);
     return 0;
 }
