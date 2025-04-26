@@ -1,5 +1,4 @@
 *.o
-*.c
-Makefile
+test
 main
 todo.txt

@@ -1,5 +1,5 @@
 /*
- 
+
 This Header Only Library is a collection of libraries I find myself using often.
 
  */
@@ -69,7 +69,7 @@ void unload(Fasic_Matrix *b);                                                   
 // Utility Functions
 Fasic_Matrix random_matrix(size_t nrows, size_t ncols);                         // generates random Fasic_Matrix(nrows x ncols)
 void print_matrix(const Fasic_Matrix b, const char *name);                      // prints a Fasic_Matrix
-Fasic_Shape matrix_shape(Fasic_Matrix A);                                             // returns shape of the Fasic_Matrix
+Fasic_Shape matrix_shape(Fasic_Matrix *A);                                             // returns shape of the Fasic_Matrix
 Fasic_Matrix fill(size_t nrows, size_t ncols, float fill_value);                // creates a Fasic_Matrix filled with a specific value
 
 // Operation Functions
@@ -88,8 +88,8 @@ bool test_matrix_equal(Fasic_Matrix a, Fasic_Matrix b);                         
 /* Macro function For Printing the shape of a Fasic_Matrix */
 #define PRINT_SHAPE(A)\
     do {\
-        Fasic_Shape shape = matrix_shape(*A);\
-        printf("Fasic_Shape: [%zu, %zu]\n", shape.rows, shape.cols);\
+        Fasic_Shape shape = matrix_shape(&A);\
+        printf("%s Shape: [%zu, %zu]\n",#A, shape.rows, shape.cols);\
     } while (0)
 
 #ifdef __cplusplus
@@ -158,7 +158,7 @@ float get_element(Fasic_Matrix C, size_t row, size_t col) {
                 row, col, C.nrows, C.ncols);
         exit(EXIT_FAILURE); // handle the error, exit or return an error value
     }
-    
+
     return C.A[row * C.ncols + col];
 }
 
@@ -210,10 +210,9 @@ void print_matrix(const Fasic_Matrix b, const char *name) {
     printf("\n\n");
 }
 
-Fasic_Shape matrix_shape(Fasic_Matrix A) {
+Fasic_Shape matrix_shape(Fasic_Matrix *A) {
     // shape of the Fasic_Matrix (rows, columns)
-    Fasic_Shape shape = {.rows = A.nrows, .cols = A.ncols};
-    return shape;
+    return (Fasic_Shape) {A->nrows, A->ncols};
 }
 
 Fasic_Matrix matrix_add(Fasic_Matrix *A, Fasic_Matrix *B) {
@@ -222,7 +221,7 @@ Fasic_Matrix matrix_add(Fasic_Matrix *A, Fasic_Matrix *B) {
 
     // initialize a new Fasic_Matrix for the result
     Fasic_Matrix C = create_matrix(A->nrows, A->ncols);
-    
+
     for (size_t i = 0; i < A->nrows; ++i) {
         for (size_t j = 0; j < A->ncols; ++j) {
             float a = get_element(*A, i , j);
@@ -324,7 +323,7 @@ bool test_matrix_equal(Fasic_Matrix A, Fasic_Matrix B) {
         for (size_t j = 0; j < A.ncols; ++j) {
             float a , b;
             a = get_element(A, i, j);
-            b = get_element(B, i, j); 
+            b = get_element(B, i, j);
             if (a != b) {
                 return false; // not equal
             }
@@ -388,7 +387,7 @@ bool hashmap_insert(HashMap *hashmap, char *key)
 {
     unsigned int hash = hash_function(key);
     Dictionary *bucket = &hashmap->buckets[hash];
-    
+
     if (bucket->key == NULL) {
         unsigned int slen = strlen(key);
         bucket->key = malloc(sizeof(char)* (slen + 1));
@@ -501,8 +500,8 @@ void remove_directory(char *args[])
         waitpid(pid, &status, 0);
         if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
             exit(1);
-        } 
-    }    
+        }
+    }
 }
 
 void make_new_directory(char *dir_name)
@@ -513,7 +512,7 @@ void make_new_directory(char *dir_name)
         printf("Directory \'%s\' already Exists.\n", dir_name);
         exit(0);
     } else {
-        char *dir_args[] = {"mkdir", dir_name}; 
+        char *dir_args[] = {"mkdir", dir_name};
         pid_t pid = fork();
         if (pid == -1) {
             perror("Fork Failed");
@@ -528,8 +527,8 @@ void make_new_directory(char *dir_name)
             waitpid(pid, &status, 0);
             if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
                 exit(1);
-            } 
-        } 
+            }
+        }
     }
 }
 
@@ -540,7 +539,7 @@ void build_c_file(char *cmd_line[])
         perror("Fork Failed.");
         exit(1);
     }
-    
+
     if (pid == 0) {
         execvp(cmd_line[0], cmd_line);
         perror("Build Failed.");
@@ -550,10 +549,15 @@ void build_c_file(char *cmd_line[])
         waitpid(pid, &status, 0);
         if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
             exit(1);
-        } 
+        }
     }
 }
 
 #endif // FASIC_IMPLEMENTATION
 
 #endif // FASIC_H_
+
+// TODO: Add prefixes to functions
+// TODO: Modify the hashtable to take in Anytype
+// TODO: Prefix the Hashmap functions and the logging Functions
+// TDOD: Make the build function accept a union of string or array of strings whichever fed
